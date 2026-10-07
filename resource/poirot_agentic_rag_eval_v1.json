@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0",
+  "name": "poirot-agentic-rag-v1",
+  "scope": "Controlled Agent behavior evaluation over the curated project corpus.",
+  "cases": [
+    {"id":"agent-01","prompt":"只根据本地知识库解释 Local Sandbox 和 Docker Sandbox 的取舍，并指出来源文件。","should_call_knowledge_search":true,"expected_sources":["sandbox.md"],"required_strings":["Local Sandbox","Docker Sandbox"],"must_not_contain":["Chroma 已经启用"]},
+    {"id":"agent-02","prompt":"请根据本地知识库说明 Windows + WSL2 下的 Docker 路径转换，并给出路径示例。","should_call_knowledge_search":true,"expected_sources":["sandbox.md"],"required_strings":["WslDockerExecutor","/mnt/d/foo/bar"]},
+    {"id":"agent-03","prompt":"请根据本地知识库说明上下文治理如何处理历史消息。回答必须同时提到压缩和外化。","should_call_knowledge_search":true,"expected_sources":["architecture.md"],"required_strings":["compaction","externalization"],"must_not_contain":["上下文永远不会超限"]},
+    {"id":"agent-04","prompt":"请解释 LangGraph、LeaderAgent 和 middleware 在本项目外层流程中的职责，只使用本地知识库。","should_call_knowledge_search":true,"expected_sources":["architecture.md"],"required_strings":["LangGraph","LeaderAgent","middleware"]},
+    {"id":"agent-05","prompt":"本地资料中没有关于 Kubernetes Operator 的内容。请查询后谨慎回答，不要补充外部知识。","should_call_knowledge_search":true,"expected_sources":[],"required_strings":[],"required_any_groups":[["无法确认","资料不足","没有找到","知识库中没有"]],"must_not_contain":["Kubernetes Operator 已经由 Poirot 管理"]},
+    {"id":"agent-06","prompt":"请查询本地知识库解释 Skill 和工具的区别，并说明 Skill 是否可执行。","should_call_knowledge_search":true,"expected_sources":["memory_skill.md"],"required_strings":["research process knowledge bundles","not executable functions"]},
+    {"id":"agent-07","prompt":"请查询本地资料说明 L3 记忆和 L5 记忆分别负责什么。回答中必须区分检索和后台整合。","should_call_knowledge_search":true,"expected_sources":["memory_skill.md"],"required_strings":["HybridRetriever","threading.Queue"]},
+    {"id":"agent-08","prompt":"请回答轻量 Agentic RAG 的配置目录、索引方式以及当前没有使用的组件。需要查本地资料。","should_call_knowledge_search":true,"expected_sources":["rag_config.md"],"required_strings":["POIROT_RAG_DIR","BM25","Chroma"],"must_not_contain":["当前版本已经使用 Embedding"]},
+    {"id":"agent-09","prompt":"第一次查询可以先用‘上下文优化’，如果证据不足请改写查询再查，最后说明上下文治理的两种策略。","should_call_knowledge_search":true,"expected_sources":["architecture.md"],"required_strings":["compaction","externalization"],"min_knowledge_search_calls":2,"allow_query_refinement":true},
+    {"id":"agent-10","prompt":"请根据本地资料综合回答：MCP fallback 和 Agentic RAG 的共同点与区别。需要先检索再回答。","should_call_knowledge_search":true,"expected_sources":["architecture.md","rag_config.md"],"required_strings":["fallback","knowledge_search"]},
+    {"id":"agent-11","prompt":"你好，请用一句话说明你能做什么，不需要查询项目资料。","should_call_knowledge_search":false,"expected_sources":[],"required_strings":[]},
+    {"id":"agent-12","prompt":"请根据本地知识库回答 Skill 三层评估包括哪些内容，并给出完整列表。","should_call_knowledge_search":true,"expected_sources":["memory_skill.md"],"required_strings":["execution judgment","four-dimensional task quality","response contracts"]},
+    {"id":"agent-13","prompt":"请查询本地资料说明 warm pool 的目的，并说明它不解决什么问题。","should_call_knowledge_search":true,"expected_sources":["sandbox.md"],"required_strings":["warm pool","cold-start latency"],"must_not_contain":["warm pool 会替代 Docker 隔离"]},
+    {"id":"agent-14","prompt":"请基于本地知识库说明 DockerPathGuard 和 DockerPathTranslator 的职责区别。","should_call_knowledge_search":true,"expected_sources":["sandbox.md"],"required_strings":["DockerPathGuard","DockerPathTranslator","/mnt/poirot/user-data/"]},
+    {"id":"agent-15","prompt":"请只根据本地资料解释 L4 memory middleware 为什么在 before_model 注入 recalled memories。","should_call_knowledge_search":true,"expected_sources":["memory_skill.md"],"required_strings":["before_model","recalled memories"]},
+    {"id":"agent-16","prompt":"请用一句话问候用户，不要查询本地知识库，也不要提及项目架构。","should_call_knowledge_search":false,"expected_sources":[],"required_strings":[],"must_not_contain":["knowledge_search"]},
+    {"id":"agent-17","prompt":"请查询本地资料比较 MCP fallback 与 Agentic RAG：前者解决工具可用性，后者解决本地资料检索。","should_call_knowledge_search":true,"expected_sources":["architecture.md","rag_config.md"],"required_strings":["fallback","knowledge_search","MCP"]},
+    {"id":"agent-18","prompt":"轻量本地 RAG 是否已经接入 Chroma、Redis、Embedding 和 reranker？请查询后逐项谨慎回答。","should_call_knowledge_search":true,"expected_sources":["rag_config.md"],"required_strings":["Chroma","Redis","embeddings","reranker"],"required_any_groups":[["没有使用","does not use","未使用"]],"must_not_contain":["已经接入 Chroma"]},
+    {"id":"agent-19","prompt":"请查询本地资料，列出 Poirot MCP 支持的三种 transport，并说明工具 fallback 的例子。","should_call_knowledge_search":true,"expected_sources":["architecture.md"],"required_strings":["stdio","sse","http","builtin ddg"]},
+    {"id":"agent-20","prompt":"先用‘记忆后台任务’查询；如果没有足够证据，请换成更具体的查询。最后解释 L5 为什么不阻塞主循环。","should_call_knowledge_search":true,"expected_sources":["memory_skill.md"],"required_strings":["threading.Queue","main agent loop"],"min_knowledge_search_calls":2,"allow_query_refinement":true}
+  ]
+}

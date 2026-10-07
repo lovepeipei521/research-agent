@@ -1,0 +1,137 @@
+{
+  "schema_version": "1.0",
+  "name": "poirot-agent-eval-v2",
+  "scope": "Small controlled Agent benchmark for quality, tool use, budgets, latency, and optional token usage.",
+  "claim_policy": "Metrics apply only to this case set, pinned provider, and retained runtime traces.",
+  "cases": [
+    {
+      "id": "basic-01",
+      "category": "no_tool",
+      "prompt": "你好，请用一句话说明你能做什么，不要查询项目资料。",
+      "should_call_knowledge_search": false,
+      "expected_sources": [],
+      "required_strings": [],
+      "max_llm_requests": 2,
+      "max_tool_calls": 0
+    },
+    {
+      "id": "tool-01",
+      "category": "single_tool",
+      "prompt": "请根据本地知识库解释 Local Sandbox 和 Docker Sandbox 的取舍，并指出来源文件。",
+      "should_call_knowledge_search": true,
+      "expected_sources": ["sandbox.md"],
+      "required_strings": ["Local Sandbox", "Docker Sandbox"],
+      "max_llm_requests": 5,
+      "max_tool_calls": 4
+    },
+    {
+      "id": "tool-02",
+      "category": "single_tool",
+      "prompt": "请根据本地资料说明 Windows + WSL2 下 Docker 路径如何转换，并给出 /mnt/d/foo/bar 示例。",
+      "should_call_knowledge_search": true,
+      "expected_sources": ["sandbox.md"],
+      "required_strings": ["WslDockerExecutor", "/mnt/d/foo/bar"],
+      "max_llm_requests": 5,
+      "max_tool_calls": 4
+    },
+    {
+      "id": "context-01",
+      "category": "context_governance",
+      "prompt": "请根据本地资料说明上下文治理如何处理历史消息，回答必须同时覆盖压缩和外化。",
+      "should_call_knowledge_search": true,
+      "expected_sources": ["architecture.md"],
+      "required_strings": [],
+      "required_any_groups": [["compaction", "Compaction", "压缩"], ["externalization", "Externalization", "外化"]],
+      "must_not_contain": ["上下文永远不会超限"],
+      "max_llm_requests": 5,
+      "max_tool_calls": 4
+    },
+    {
+      "id": "context-02",
+      "category": "context_governance",
+      "prompt": "只根据本地知识库解释 LangGraph、LeaderAgent 和 middleware 在外层流程中的职责。",
+      "should_call_knowledge_search": true,
+      "expected_sources": ["architecture.md"],
+      "required_strings": ["LangGraph", "LeaderAgent"],
+      "required_any_groups": [["middleware", "Middleware", "中间件"]],
+      "max_llm_requests": 8,
+      "max_tool_calls": 8
+    },
+    {
+      "id": "memory-01",
+      "category": "memory",
+      "prompt": "请查询本地资料说明 L3 记忆和 L5 记忆分别负责什么，回答中必须区分检索和后台整合。",
+      "should_call_knowledge_search": true,
+      "expected_sources": ["memory_skill.md"],
+      "required_strings": ["HybridRetriever", "threading.Queue"],
+      "max_llm_requests": 6,
+      "max_tool_calls": 6
+    },
+    {
+      "id": "skill-01",
+      "category": "skill",
+      "prompt": "请查询本地知识库解释 Skill 和工具的区别，并说明 Skill 是否可执行。",
+      "should_call_knowledge_search": true,
+      "expected_sources": ["memory_skill.md"],
+      "required_strings": ["research process knowledge bundles", "not executable functions"],
+      "max_llm_requests": 6,
+      "max_tool_calls": 6
+    },
+    {
+      "id": "rag-01",
+      "category": "agentic_rag",
+      "prompt": "请回答轻量 Agentic RAG 使用的配置目录、索引方式，以及当前没有接入的组件。需要查本地资料。",
+      "should_call_knowledge_search": true,
+      "expected_sources": ["rag_config.md"],
+      "required_strings": ["POIROT_RAG_DIR", "BM25"],
+      "required_any_groups": [["Chroma", "Redis", "Embedding", "embedding"]],
+      "max_llm_requests": 6,
+      "max_tool_calls": 6
+    },
+    {
+      "id": "fallback-01",
+      "category": "fallback_concept",
+      "prompt": "请根据本地资料解释 MCP fallback 和 Agentic RAG 分别解决什么问题。",
+      "should_call_knowledge_search": true,
+      "expected_sources": ["architecture.md", "rag_config.md"],
+      "required_strings": ["fallback", "knowledge_search"],
+      "max_llm_requests": 6,
+      "max_tool_calls": 6
+    },
+    {
+      "id": "negative-01",
+      "category": "negative_knowledge",
+      "prompt": "本地资料中没有关于 Kubernetes Operator 的内容。请查询后谨慎回答，不要补充外部知识。",
+      "should_call_knowledge_search": true,
+      "expected_sources": [],
+      "required_strings": [],
+      "required_any_groups": [["知识库中没有", "没有关于", "未找到", "无法确认", "无法提供", "资料不足"]],
+      "must_not_contain": ["Kubernetes Operator 已经由 Poirot 管理"],
+      "max_llm_requests": 4,
+      "max_tool_calls": 2
+    },
+    {
+      "id": "refine-01",
+      "category": "query_refinement",
+      "prompt": "先用“记忆后台任务”查询；如果证据不足，请换成更具体的查询。最后解释 L5 为什么不阻塞主循环。",
+      "should_call_knowledge_search": true,
+      "expected_sources": ["memory_skill.md"],
+      "required_strings": ["threading.Queue", "main agent loop"],
+      "min_knowledge_search_calls": 2,
+      "allow_query_refinement": true,
+      "max_llm_requests": 6,
+      "max_tool_calls": 4
+    },
+    {
+      "id": "sandbox-01",
+      "category": "sandbox",
+      "prompt": "请查询本地资料说明 Docker warm pool 的目的，并说明它不负责解决什么问题。",
+      "should_call_knowledge_search": true,
+      "expected_sources": ["sandbox.md"],
+      "required_strings": ["warm pool", "cold-start latency"],
+      "must_not_contain": ["warm pool 会替代 Docker 隔离"],
+      "max_llm_requests": 5,
+      "max_tool_calls": 5
+    }
+  ]
+}

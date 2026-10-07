@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0",
+  "name": "poirot-rag-retrieval-v1",
+  "scope": "Controlled retrieval evaluation over the curated project corpus.",
+  "cases": [
+    {"id":"retrieval-01","query":"Local 和 Docker Sandbox 有什么区别","expected_sources":["sandbox.md"],"required_terms":["Local Sandbox","Docker Sandbox"],"should_find":true},
+    {"id":"retrieval-02","query":"Windows WSL2 下 Docker 路径如何转换","expected_sources":["sandbox.md"],"required_terms":["WslDockerExecutor","/mnt/d/foo/bar"],"should_find":true},
+    {"id":"retrieval-03","query":"为什么要限制 sandbox 的写入路径","expected_sources":["sandbox.md"],"required_terms":["DockerPathGuard","/mnt/poirot/user-data/"],"should_find":true},
+    {"id":"retrieval-04","query":"上下文治理如何防止上下文溢出","expected_sources":["architecture.md"],"required_terms":["compaction","externalization"],"should_find":true},
+    {"id":"retrieval-05","query":"LangGraph 在 Poirot 外层负责什么流程","expected_sources":["architecture.md"],"required_terms":["prepare","leader_agent","finalize"],"should_find":true},
+    {"id":"retrieval-06","query":"MCP 工具失败后有什么 fallback","expected_sources":["architecture.md"],"required_terms":["MCP","builtin ddg"],"should_find":true},
+    {"id":"retrieval-07","query":"长期记忆的 L3 和 L5 分别做什么","expected_sources":["memory_skill.md"],"required_terms":["HybridRetriever","daemon worker"],"should_find":true},
+    {"id":"retrieval-08","query":"记忆 consolidation 为什么不会阻塞主循环","expected_sources":["memory_skill.md"],"required_terms":["threading.Queue","main agent loop"],"should_find":true},
+    {"id":"retrieval-09","query":"Skill 是可执行函数还是研究过程知识","expected_sources":["memory_skill.md"],"required_terms":["research process knowledge bundles","not executable functions"],"should_find":true},
+    {"id":"retrieval-10","query":"Poirot 的三层 Skill 评估包括哪些内容","expected_sources":["memory_skill.md"],"required_terms":["execution judgment","four-dimensional task quality","response contracts"],"should_find":true},
+    {"id":"retrieval-11","query":"轻量本地 Agentic RAG 使用什么索引和环境变量","expected_sources":["rag_config.md"],"required_terms":["knowledge_search","POIROT_RAG_DIR","BM25"],"should_find":true},
+    {"id":"retrieval-12","query":"当前轻量 RAG 是否使用 Chroma Redis Embedding","expected_sources":["rag_config.md"],"required_terms":["does not use Chroma","Redis","embeddings"],"should_find":true},
+    {"id":"retrieval-13","query":"Kubernetes Operator cluster deployment","expected_sources":[],"required_terms":[],"should_find":false},
+    {"id":"retrieval-14","query":"Milvus vector database product profile","expected_sources":[],"required_terms":[],"should_find":false},
+    {"id":"retrieval-15","query":"knowledge_search 支持哪些本地文档后缀","expected_sources":["rag_config.md"],"required_terms":["md","txt","rst","json"],"should_find":true},
+    {"id":"retrieval-16","query":"Agent 第一次证据不足后能否重新检索","expected_sources":["rag_config.md"],"required_terms":["refine the query","call it again"],"should_find":true},
+    {"id":"retrieval-17","query":"Docker warm pool 解决什么性能问题","expected_sources":["sandbox.md"],"required_terms":["warm pool","cold-start latency"],"should_find":true},
+    {"id":"retrieval-18","query":"DockerPathTranslator 如何支持 Windows artifact extraction","expected_sources":["sandbox.md"],"required_terms":["DockerPathTranslator","Windows host paths"],"should_find":true},
+    {"id":"retrieval-19","query":"L4 memory middleware 如何向模型注入召回内容","expected_sources":["memory_skill.md"],"required_terms":["before_model","recalled memories"],"should_find":true},
+    {"id":"retrieval-20","query":"middleware 可以在哪些 Agent 生命周期 hook 执行","expected_sources":["architecture.md"],"required_terms":["before_agent","before_model","wrap_tool_call"],"should_find":true}
+  ]
+}

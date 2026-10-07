@@ -1,0 +1,1 @@
+"""Poirot backend app package."""

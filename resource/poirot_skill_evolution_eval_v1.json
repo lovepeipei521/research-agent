@@ -1,0 +1,162 @@
+{
+  "schema_version": "1.0",
+  "scope": "Controlled mechanism evaluation for the SQLite-backed Skill evolution control plane. It validates trigger, quality-gate, and rollback contracts; it is not an end-to-end business-task success benchmark.",
+  "cases": [
+    {
+      "id": "trigger-high-fallback",
+      "kind": "trigger",
+      "skill_name": "source-validation",
+      "events": {
+        "selections": 10,
+        "outcomes": [
+          {"applied": false, "task_completed": false, "count": 5},
+          {"applied": null, "task_completed": false, "count": 5}
+        ]
+      },
+      "trigger": {"min_selections": 5, "cooldown_turns": 0},
+      "expect": {"triggered": true, "direction_contains": "fallback_rate"}
+    },
+    {
+      "id": "trigger-low-completion",
+      "kind": "trigger",
+      "skill_name": "research-outline",
+      "events": {
+        "selections": 10,
+        "outcomes": [
+          {"applied": true, "task_completed": true, "count": 1},
+          {"applied": true, "task_completed": false, "count": 4},
+          {"applied": null, "task_completed": false, "count": 5}
+        ]
+      },
+      "trigger": {"min_selections": 5, "cooldown_turns": 0},
+      "expect": {"triggered": true, "direction_contains": "completion_rate"}
+    },
+    {
+      "id": "trigger-healthy-skill",
+      "kind": "trigger",
+      "skill_name": "evidence-synthesis",
+      "events": {
+        "selections": 10,
+        "outcomes": [
+          {"applied": true, "task_completed": true, "count": 7},
+          {"applied": true, "task_completed": false, "count": 1},
+          {"applied": null, "task_completed": false, "count": 2}
+        ]
+      },
+      "trigger": {"min_selections": 5, "cooldown_turns": 0},
+      "expect": {"triggered": false}
+    },
+    {
+      "id": "trigger-insufficient-samples",
+      "kind": "trigger",
+      "skill_name": "new-search-pattern",
+      "events": {
+        "selections": 3,
+        "outcomes": [
+          {"applied": false, "task_completed": false, "count": 2},
+          {"applied": null, "task_completed": false, "count": 1}
+        ]
+      },
+      "trigger": {"min_selections": 5, "cooldown_turns": 0},
+      "expect": {"triggered": false}
+    },
+    {
+      "id": "trigger-cooldown",
+      "kind": "cooldown",
+      "skill_name": "web-cross-check",
+      "events": {
+        "selections": 10,
+        "outcomes": [
+          {"applied": false, "task_completed": false, "count": 5},
+          {"applied": null, "task_completed": false, "count": 5}
+        ]
+      },
+      "additional_events": {
+        "selections": 5,
+        "outcomes": [
+          {"applied": false, "task_completed": false, "count": 3},
+          {"applied": null, "task_completed": false, "count": 2}
+        ]
+      },
+      "trigger": {"min_selections": 5, "cooldown_turns": 5},
+      "expect": {"initial_triggered": true, "blocked_during_cooldown": true, "retriggered_after_cooldown": true}
+    },
+    {
+      "id": "gate-accept-improved-candidate",
+      "kind": "gate",
+      "has_baseline": true,
+      "candidate_score": 0.8,
+      "baseline_passes": [true, false, false, false],
+      "hard_failures": [],
+      "expect": {"recommendation": "accept"}
+    },
+    {
+      "id": "gate-reject-hard-failure",
+      "kind": "gate",
+      "has_baseline": true,
+      "candidate_score": 1.0,
+      "baseline_passes": [false, false, false, false],
+      "hard_failures": ["nonempty"],
+      "expect": {"recommendation": "reject", "reason_contains": "hard_failures"}
+    },
+    {
+      "id": "gate-reject-no-score-delta",
+      "kind": "gate",
+      "has_baseline": true,
+      "candidate_score": 0.5,
+      "baseline_passes": [true, false],
+      "hard_failures": [],
+      "expect": {"recommendation": "reject", "reason_contains": "candidate="}
+    },
+    {
+      "id": "gate-accept-captured-skill",
+      "kind": "gate",
+      "has_baseline": false,
+      "candidate_score": 0.7,
+      "baseline_passes": [],
+      "hard_failures": [],
+      "expect": {"recommendation": "accept"}
+    },
+    {
+      "id": "ratchet-rollback-degraded-version",
+      "kind": "ratchet",
+      "skill_name": "source-validation",
+      "events": {
+        "selections": 10,
+        "outcomes": [
+          {"applied": true, "task_completed": true, "count": 1},
+          {"applied": null, "task_completed": false, "count": 9}
+        ]
+      },
+      "ratchet": {"degradation_threshold": 0.3, "min_selections": 5},
+      "expect": {"rolled_back": true, "active_version": "baseline"}
+    },
+    {
+      "id": "ratchet-keep-healthy-version",
+      "kind": "ratchet",
+      "skill_name": "research-outline",
+      "events": {
+        "selections": 10,
+        "outcomes": [
+          {"applied": true, "task_completed": true, "count": 8},
+          {"applied": null, "task_completed": false, "count": 2}
+        ]
+      },
+      "ratchet": {"degradation_threshold": 0.3, "min_selections": 5},
+      "expect": {"rolled_back": false, "active_version": "candidate"}
+    },
+    {
+      "id": "ratchet-wait-for-samples",
+      "kind": "ratchet",
+      "skill_name": "new-search-pattern",
+      "events": {
+        "selections": 3,
+        "outcomes": [
+          {"applied": true, "task_completed": false, "count": 3}
+        ]
+      },
+      "ratchet": {"degradation_threshold": 0.3, "min_selections": 5},
+      "expect": {"rolled_back": false, "active_version": "candidate"}
+    }
+  ]
+}

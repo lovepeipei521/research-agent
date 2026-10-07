@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0",
+  "scope": "Synthetic long-history mechanism evaluation for DefaultStrategy; not an open-domain answer-quality benchmark.",
+  "cases": [
+    {"id": "p1-01", "kind": "externalize", "turns": 5, "tools_per_turn": 3, "content_chars": 1800, "exempt_rounds": 2, "min_externalized": 6, "min_token_reduction_percent": 20.0},
+    {"id": "p1-02", "kind": "externalize", "turns": 6, "tools_per_turn": 2, "content_chars": 2200, "exempt_rounds": 2, "min_externalized": 4, "min_token_reduction_percent": 20.0},
+    {"id": "p1-03", "kind": "externalize", "turns": 7, "tools_per_turn": 2, "content_chars": 2600, "exempt_rounds": 3, "min_externalized": 4, "min_token_reduction_percent": 15.0},
+    {"id": "p1-04", "kind": "externalize", "turns": 8, "tools_per_turn": 3, "content_chars": 1600, "exempt_rounds": 2, "min_externalized": 12, "min_token_reduction_percent": 20.0},
+    {"id": "p1-05", "kind": "externalize", "turns": 5, "tools_per_turn": 4, "content_chars": 2400, "exempt_rounds": 1, "min_externalized": 12, "min_token_reduction_percent": 35.0},
+    {"id": "p1-06", "kind": "externalize", "turns": 9, "tools_per_turn": 2, "content_chars": 2800, "exempt_rounds": 2, "min_externalized": 7, "min_token_reduction_percent": 20.0},
+    {"id": "p4-01", "kind": "summarize", "turns": 8, "preserve_recent": 4},
+    {"id": "p4-02", "kind": "summarize", "turns": 12, "preserve_recent": 6},
+    {"id": "p5-01", "kind": "stop_tool_calls", "fraction": 0.91},
+    {"id": "p5-02", "kind": "stop_tool_calls", "fraction": 0.99}
+  ]
+}
